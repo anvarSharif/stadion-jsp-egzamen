@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @WebServlet("/stadium/add")
 @MultipartConfig
-public class StadiumAddServlet extends HttpServlet {
+public class StadiumAddServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Part photo = req.getPart("photo");
@@ -35,7 +35,8 @@ public class StadiumAddServlet extends HttpServlet {
         Region region = regionRepo.findById(regionId).get();
 
         if (startTime>=endTime){
-            resp.sendRedirect("/admin/addStadium.jsp");
+            req.setAttribute("error","boshlanish vaqti tugash vaqtidan oldin bo'lishi kerak!");
+            req.getRequestDispatcher("/admin/addStadium.jsp").forward(req,resp);
             return;
         }
 

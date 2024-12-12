@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.example.stadionjsp_modul8egzamen.repo.StadiumRepo" %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="java.util.Objects" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
@@ -26,6 +27,12 @@
             stadium = optionalStadium.get();
         }
     }
+    Object object = request.getAttribute("error");
+    String error="";
+    if (object!=null){
+        error=(String)object;
+    }
+
 %>
 
 <div class="container mt-5">
@@ -66,6 +73,8 @@
                     <input type="number" value="<%=stadium==null?"":stadium.getStartTime()%>" class="form-control"
                            id="startTime" name="startTime" placeholder="Boshlanish vaqtini kiriting:" min="0" max="23"
                            required>
+                    <span class="text-danger"><%=Objects.requireNonNullElse(error,"")%></span>
+
                 </div>
 
                 <div class="mb-3">

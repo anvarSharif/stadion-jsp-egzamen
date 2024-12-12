@@ -6,6 +6,9 @@ import com.example.stadionjsp_modul8egzamen.entity.User;
 import com.example.stadionjsp_modul8egzamen.entity.enums.RoleName;
 import com.example.stadionjsp_modul8egzamen.repo.RoleRepo;
 import com.example.stadionjsp_modul8egzamen.repo.UserRepo;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -14,8 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @WebServlet("/auth/register")
 @MultipartConfig
@@ -25,7 +27,6 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String phoneInp = req.getParameter("phone_inp");
         if (phoneInp != null) {
-            String fullNameInp = req.getParameter("fullName_inp");
             String passwordInp = req.getParameter("password_inp");
             String passwordRepeatInp = req.getParameter("password_repeat_inp");
             if (!passwordRepeatInp.equals(passwordInp)) {
@@ -35,9 +36,21 @@ public class RegisterServlet extends HttpServlet {
 
             User user = new User(
                     phoneInp,
-                    passwordInp,
-                    fullNameInp
+                    passwordInp
             );
+
+            Map<String,String> map=new HashMap<>();
+            Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+            Set<ConstraintViolation<User>> validateList = validator.validate(user);
+            for (ConstraintViolation<User> violation : validateList) {
+                map.put(violation.getPropertyPath().toString(),violation.getMessage());
+            }
+            if (!map.isEmpty()) {
+                req.setAttribute("errors",map);
+                req.getRequestDispatcher("/auth/register.jsp").forward(req,resp);
+            }
+
+
             RoleRepo roleRepo=new RoleRepo();
             Role role=roleRepo.findByRoleName(RoleName.CUSTOMER);
 
